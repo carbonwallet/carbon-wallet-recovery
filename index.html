@@ -63,7 +63,7 @@
         function decryptBip38Key(bip38, passphrase) { 
         
           // First we decrypt the bip38 key.
-          var worker = new Worker('workers/bip38.js');
+          var worker = new Worker('bip38.js');
       
           worker.addEventListener('message', function(e) {
             var data = e.data;
