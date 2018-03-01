@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Carbon Wallet Recovery</title>
+  </head>
+  <body>
+    <div class="container pt-3">
+      <div class="card mt-5">
+        <div class="card-header">
+          Single Signature Wallets
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="form-group">
+              <label for="browser-created-bip38">BIP38 Encrypted Key - Starts with a 6.</label>
+              <input type="text" value="6PYVjUx66TouSXe9Cb5xKuXgyXzC3kU783QeM8b4hKMd3GjjeUDYDupYo8" class="form-control" id="browser-created-bip38" aria-describedby="emailHelp" placeholder="Enter BIP38 Key">
+              <small id="emailHelp" class="form-text text-muted">All processing is done client side.</small>
+            </div>
+            <div class="form-group">
+              <label for="passphrase">Password</label>
+              <input type="password" value="testuser@testuser.com" class="form-control" id="passphrase" placeholder="Password">
+            </div>
+            <button id="decrypt" type="submit" class="btn btn-primary">Decrypt</button>
+          </form>
+          <table id="address-table" class="table table-sm table-striped mt-5 d-none">
+            <tr><th>Bitcoin Address</th><th>Private Key</th></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="lib/bitcoinjs-lib.js"></script>
+    
+    <script type="text/javascript">
+      "use strict";
+      /* global $, bitcoin */
+      $(function() {
+        
+        $('#decrypt').click(function() {
+          
+          $('#decrypt').attr("disabled", "disabled");
+          
+          $("#address-table").find("tr:gt(0)").remove();
+      
+          decryptBip38Key($('#browser-created-bip38').val(), 
+            $('#passphrase').val());
+            
+          return false;
+        });
+  
+        function decryptBip38Key(bip38, passphrase) { 
+        
+          // First we decrypt the bip38 key.
+          var worker = new Worker('/workers/bip38.js');
+      
+          worker.addEventListener('message', function(e) {
+            var data = e.data;
+            if (data.status == 'done') {
+              
+              $('#decrypt').removeAttr("disabled");
+              $('#decrypt').text('Decrypt');
+            
+              const wif = data.result;
+              console.log(wif)
+        
+              var keyPair = bitcoin.ECPair.fromWIF(wif);
+              var hd = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex());
+              for(var i = 0; i < 11; i++) {
+                var key = hd.derive(1).derive(i).keyPair;
+                $('#address-table').append('<tr><td>' + key.getAddress() 
+                  + '</td><td>' + key.toWIF() + '</td></tr>');
+                  
+                $('#address-table').removeClass('d-none');
+              }
+        
+            }
+            if (data.status == 'working') {
+              $('#decrypt').text('Decrypting ' + (parseInt(data.percent) + 1) + "%")
+            }
+          }, false);
+          
+          worker.postMessage({ cmd: 'decrypt', cipher: bip38, password: passphrase });
+        
+        }
+      });
+    </script>
+  </body>
+</html>
