@@ -1,7 +1,3 @@
-# carbon-wallet-recovery
-Private Key Recovery
-
-
 Carbon Wallet Recovery Tool
 ============================
 
@@ -16,15 +12,13 @@ In order to do this you will need the data from your wallet backup that you eith
 
 You can download this github code and use it locally or you can trust github and access it with the link below.
 
-http://onchain.github.io/carbonwallet-recovery
-
 ## Usage
 
 ### Required input
 
 To complete this recovery process, you will need the following information:
 
-* 1 BIP38 Keys
+* 1 BIP38 Key (Begins with a 6.)
 * Your Carbon Wallet password
 
 ### Running
