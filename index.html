@@ -65,10 +65,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="bitcoinjs-lib.js"></script>
-    
+    <script src="ethereumjs-util.js"></script>
     <script type="text/javascript">
       "use strict";
-      /* global $, bitcoin */
+      /* global $, bitcoin, ethUtil */
       $(function() {
         
         // Use fule whne I'm testing so I don't accidentily check my private
@@ -117,7 +117,11 @@
                 $('#bitcoin-table').append('<tr><td>' + key.getAddress() 
                   + '</td><td>' + key.toWIF() + '</td></tr>');
                   
-                $('#ethereum-table').append('<tr><td>' + 'Not Sure Yet' 
+                  
+                var addressBuffer = ethUtil.privateToAddress('0x' + key.getPrivateKeyHex());
+                var hexAddress = ethUtil.toChecksumAddress(addressBuffer.toString('hex'));
+              
+                $('#ethereum-table').append('<tr><td>' + hexAddress 
                   + '</td><td>' + key.toWIF() + '</td></tr>');
                   
                 $('#results').removeClass('d-none');
