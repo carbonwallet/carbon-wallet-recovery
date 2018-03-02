@@ -12,7 +12,8 @@
   </head>
   <body>
     <div class="container pt-3">
-      <div class="card mt-5">
+      
+      <div class="card mt-5 mb-5">
         <div class="card-header">
           Single Signature Wallets
         </div>
@@ -29,9 +30,31 @@
             </div>
             <button id="decrypt" type="submit" class="btn btn-primary">Decrypt</button>
           </form>
-          <table id="address-table" class="table table-sm table-striped mt-5 d-none table-responsive">
-            <tr><th>Bitcoin Address</th><th>Private Key</th></tr>
-          </table>
+          
+          <div id="results" class="d-none mt-5">
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" href="#bitcoin" role="tab" data-toggle="tab">Bitcoin</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#ethereum" role="tab" data-toggle="tab">Ethereum</a>
+              </li>
+            </ul>
+      
+            <div class="tab-content">
+              <div role="tabpanel" class="tab-pane active" id="bitcoin">
+                <table id="bitcoin-table" class="mt-2 table table-sm table-striped table-responsive">
+                  <tr><th>Bitcoin Address</th><th>Private Key</th></tr>
+                </table>
+              </div>
+              <div role="tabpanel" class="tab-pane" id="ethereum">
+                <table id="ethereum-table" class="mt-2 table table-sm table-striped table-responsive">
+                  <tr><th>Ethereum Address</th><th>Private Key</th></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </div>
     </div>
@@ -91,10 +114,13 @@
               var hd = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex());
               for(var i = 0; i < 11; i++) {
                 var key = hd.derive(1).derive(i).keyPair;
-                $('#address-table').append('<tr><td>' + key.getAddress() 
+                $('#bitcoin-table').append('<tr><td>' + key.getAddress() 
                   + '</td><td>' + key.toWIF() + '</td></tr>');
                   
-                $('#address-table').removeClass('d-none');
+                $('#ethereum-table').append('<tr><td>' + 'Not Sure Yet' 
+                  + '</td><td>' + key.toWIF() + '</td></tr>');
+                  
+                $('#results').removeClass('d-none');
               }
         
             }
