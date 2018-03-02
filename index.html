@@ -48,6 +48,18 @@
       /* global $, bitcoin */
       $(function() {
         
+        // Use fule whne I'm testing so I don't accidentily check my private
+        // key into a public git repository.
+        var key = getHashValue('key');
+        var password = getHashValue('password');
+        
+        if(key != null) {
+          $('#browser-created-bip38').val(key);
+        }
+        if(password != null) {
+          $('#passphrase').val(password);
+        }
+        
         $('#decrypt').click(function() {
           
           $('#decrypt').attr("disabled", "disabled");
@@ -93,6 +105,11 @@
           
           worker.postMessage({ cmd: 'decrypt', cipher: bip38, password: passphrase });
         
+        }
+        
+        function getHashValue(key) {
+          var matches = window.location.hash.match(new RegExp(key+'=([^&]*)'));
+          return matches ? matches[1] : null;
         }
       });
     </script>
