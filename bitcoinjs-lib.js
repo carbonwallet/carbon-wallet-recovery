@@ -5110,11 +5110,15 @@ function fromBase58Check (address) {
 }
 
 function toBase58Check (hash, version) {
-  typeforce(types.tuple(types.Hash160bit, types.UInt8), arguments)
+  typeforce(types.tuple(types.Hash160bit, types.UInt16), arguments)
 
-  var payload = Buffer.allocUnsafe(21)
-  payload.writeUInt8(version, 0)
-  hash.copy(payload, 1)
+  var multibyte = version > 0xff
+  var size = multibyte ? 22 : 21
+  var offset = multibyte ? 2 : 1
+
+  var payload = Buffer.allocUnsafe(size)
+  multibyte ? payload.writeUInt16BE(version, 0) : payload.writeUInt8(version, 0)
+  hash.copy(payload, offset)
 
   return bs58check.encode(payload)
 }
@@ -6160,6 +6164,26 @@ module.exports = {
     pubKeyHash: 0x30,
     scriptHash: 0x32,
     wif: 0xb0
+  },
+  zcash: {
+    messagePrefix: '\x19Zcash Signed Message:\n',
+    bip32: {
+      public: 0x019da462,
+      private: 0x019d9cfe
+    },
+    pubKeyHash: 0x1cb8,
+    scriptHash: 0x1cbd,
+    wif: 0x80
+  },
+  bitcoin_private: {
+    messagePrefix: '\x19Bitcoin Private Signed Message:\n',
+    bip32: {
+      public: 0x019da462,
+      private: 0x019d9cfe
+    },
+    pubKeyHash: 0x1325,
+    scriptHash: 0x13af,
+    wif: 0x80
   }
 }
 
@@ -8394,8 +8418,8 @@ var Network = typeforce.compile({
     public: typeforce.UInt32,
     private: typeforce.UInt32
   },
-  pubKeyHash: typeforce.UInt8,
-  scriptHash: typeforce.UInt8,
+  pubKeyHash: typeforce.UInt32,
+  scriptHash: typeforce.UInt32,
   wif: typeforce.UInt8
 })
 

@@ -28,6 +28,10 @@
               <label for="passphrase">Password</label>
               <input type="password" class="form-control" id="passphrase" placeholder="Password">
             </div>
+            <div class="form-group">
+              <label for="passphrase">Number of Addresses</label>
+              <input type="number" class="form-control" id="count" value="1">
+            </div>
             <button id="decrypt" type="submit" class="btn btn-primary">Decrypt</button>
           </form>
           
@@ -35,6 +39,12 @@
             <ul class="nav nav-tabs" role="tablist">
               <li class="nav-item">
                 <a class="nav-link active" href="#bitcoin" role="tab" data-toggle="tab">Bitcoin</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link " href="#zcash" role="tab" data-toggle="tab">ZCash / ZClassic</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link " href="#private" role="tab" data-toggle="tab">Bitcoin Private</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#ethereum" role="tab" data-toggle="tab">Ethereum</a>
@@ -45,6 +55,16 @@
               <div role="tabpanel" class="tab-pane active" id="bitcoin">
                 <table id="bitcoin-table" class="mt-2 table table-sm table-striped table-responsive">
                   <tr><th>Bitcoin Address</th><th>Private Key</th></tr>
+                </table>
+              </div>
+              <div role="tabpanel" class="tab-pane" id="zcash">
+                <table id="zcash-table" class="mt-2 table table-sm table-striped table-responsive">
+                  <tr><th>Address</th><th>Private Key</th></tr>
+                </table>
+              </div>
+              <div role="tabpanel" class="tab-pane" id="private">
+                <table id="private-table" class="mt-2 table table-sm table-striped table-responsive">
+                  <tr><th>Bitcoin Private Address</th><th>Private Key</th></tr>
                 </table>
               </div>
               <div role="tabpanel" class="tab-pane" id="ethereum">
@@ -108,15 +128,30 @@
               $('#decrypt').text('Decrypt');
             
               const wif = data.result;
-              console.log(wif)
+              console.log(wif);
+              
+              const count = parseInt($('#count').val(), 10);
         
               var keyPair = bitcoin.ECPair.fromWIF(wif);
-              var hd = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex());
-              for(var i = 0; i < 11; i++) {
-                var key = hd.derive(1).derive(i).keyPair;
+              
+              const hd_bitcoin = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex(), bitcoin.networks.bitcoin);
+              const hd_zcash = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex(), bitcoin.networks.zcash);
+              const hd_private = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex(), bitcoin.networks.bitcoin_private);
+                
+              
+              for(var i = 0; i < count; i++) {
+                
+                var key = hd_bitcoin.derive(1).derive(i).keyPair;
                 $('#bitcoin-table').append('<tr><td>' + key.getAddress() 
                   + '</td><td>' + key.toWIF() + '</td></tr>');
                   
+                key = hd_zcash.derive(1).derive(i).keyPair;
+                $('#zcash-table').append('<tr><td>' + key.getAddress() 
+                  + '</td><td>' + key.toWIF() + '</td></tr>');
+                  
+                key = hd_private.derive(1).derive(i).keyPair;
+                $('#private-table').append('<tr><td>' + key.getAddress() 
+                  + '</td><td>' + key.toWIF() + '</td></tr>');
                   
                 var addressBuffer = ethUtil.privateToAddress('0x' + key.getPrivateKeyHex());
                 var hexAddress = ethUtil.toChecksumAddress(addressBuffer.toString('hex'));

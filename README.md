@@ -25,6 +25,10 @@ To complete this recovery process, you will need the following information:
 
 https://carbonwallet.github.io/carbon-wallet-recovery/
 
+You can then run up a web server i.e.
+
+python -m SimpleHTTPServer
+
 #### Running locally
 
 Download the files and access index.html from your browser.
