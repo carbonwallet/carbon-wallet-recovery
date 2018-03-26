@@ -6194,16 +6194,6 @@ module.exports = {
     pubKeyHash: 0x4C,
     scriptHash: 0x10,
     wif: 0x80
-  },
-  litecoin: {
-    messagePrefix: '\x19Bitcoin Private Signed Message:\n',
-    bip32: {
-      public: 0x019da462,
-      private: 0x019d9cfe
-    },
-    pubKeyHash: 0x6f,
-    scriptHash: 0x3a,
-    wif: 0x80
   }
 }
 
