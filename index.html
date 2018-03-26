@@ -49,6 +49,12 @@
               <li class="nav-item">
                 <a class="nav-link" href="#ethereum" role="tab" data-toggle="tab">Ethereum</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#dash" role="tab" data-toggle="tab">Dash</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#litecoin" role="tab" data-toggle="tab">Dash</a>
+              </li>
             </ul>
       
             <div class="tab-content">
@@ -70,6 +76,16 @@
               <div role="tabpanel" class="tab-pane" id="ethereum">
                 <table id="ethereum-table" class="mt-2 table table-sm table-striped table-responsive">
                   <tr><th>Ethereum Address</th><th>Private Key</th></tr>
+                </table>
+              </div>
+              <div role="tabpanel" class="tab-pane" id="dash">
+                <table id="dash-table" class="mt-2 table table-sm table-striped table-responsive">
+                  <tr><th>Dash Address</th><th>Private Key</th></tr>
+                </table>
+              </div>
+              <div role="tabpanel" class="tab-pane" id="litecoin">
+                <table id="litecoin-table" class="mt-2 table table-sm table-striped table-responsive">
+                  <tr><th>Dash Address</th><th>Private Key</th></tr>
                 </table>
               </div>
             </div>
@@ -137,6 +153,8 @@
               const hd_bitcoin = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex(), bitcoin.networks.bitcoin);
               const hd_zcash = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex(), bitcoin.networks.zcash);
               const hd_private = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex(), bitcoin.networks.bitcoin_private);
+              const hd_dash = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex(), bitcoin.networks.dash);
+              const hd_lite = bitcoin.HDNode.fromSeedHex(keyPair.getPrivateKeyHex(), bitcoin.networks.litecoin);
                 
               
               for(var i = 0; i < count; i++) {
@@ -157,6 +175,14 @@
                 var hexAddress = ethUtil.toChecksumAddress(addressBuffer.toString('hex'));
               
                 $('#ethereum-table').append('<tr><td>' + hexAddress 
+                  + '</td><td>' + key.toWIF() + '</td></tr>');
+                  
+                key = hd_dash.derive(1).derive(i).keyPair;
+                $('#dash-table').append('<tr><td>' + key.getAddress() 
+                  + '</td><td>' + key.toWIF() + '</td></tr>');
+                  
+                key = hd_lite.derive(1).derive(i).keyPair;
+                $('#litecoin-table').append('<tr><td>' + key.getAddress() 
                   + '</td><td>' + key.toWIF() + '</td></tr>');
                   
                 $('#results').removeClass('d-none');
